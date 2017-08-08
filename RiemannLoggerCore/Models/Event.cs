@@ -49,6 +49,13 @@ namespace RiemannLoggerCore.Models
         [ProtoMember(8)]
         public float? TTL { get; set; }
 
+    /*
+      repeated Attribute attributes = 9; */
+
+      [ProtoMember(9)]
+      public EventAttribute[] Attributes { get; set;}
+
+
         [ProtoMember(15)]
         public float? metric_f { get; set; }
     }
