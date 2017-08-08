@@ -4,6 +4,8 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using ProtoBuf;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RiemannLoggerCore
 {
@@ -55,8 +57,15 @@ namespace RiemannLoggerCore
 
         public void SendAndReceiveAsync(byte[] message)
         {
-            Stream tcpStream = GetNetworkStream().Result;
-            WriteRequest(message, tcpStream);
+            try
+            {
+                Stream tcpStream = GetNetworkStream().Result;
+                WriteRequest(message, tcpStream);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("failed to log to Riemann server");
+            }
         }
 
         private static void WriteRequest(byte[] message, Stream tcpStream)
@@ -70,12 +79,18 @@ namespace RiemannLoggerCore
 
         public void Dispose()
         {
-           // _client.Dispose();
+            // _client.Dispose();
         }
 
-        public void Send(string service, string state, string description)
+        public void Send(string service, string state, string description, List<KeyValuePair<string, string>> args)
         {
-            SendAsync(new Event() { Service = service, State = state, Description = description });
+            SendAsync(new Event()
+            {
+                Service = service,
+                State = state,
+                Description = description,
+                Attributes = args.Select(x => new EventAttribute() { Key = x.Key, Value = x.Value }).ToArray()
+            });
         }
 
         public void SendAsync(params Event[] events)

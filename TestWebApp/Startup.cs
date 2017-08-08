@@ -35,7 +35,8 @@ namespace TestWebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging")).AddProvider(new RiemannLoggerProvider());
+            // .AddConsole(Configuration.GetSection("Logging")).
+            loggerFactory.AddProvider(new RiemannLoggerProvider());
             loggerFactory.AddDebug();
 
             app.UseMvc();

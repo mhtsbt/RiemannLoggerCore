@@ -8,7 +8,7 @@ namespace RiemannLoggerCore
     public class ConsoleLogScope
     {
         private readonly string _name;
-        private readonly object _state;
+        public readonly object _state;
 
         internal ConsoleLogScope(string name, object state)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions.Internal;
 using System;
+using System.Collections.Generic;
 
 namespace RiemannLoggerCore
 {
@@ -44,7 +45,38 @@ namespace RiemannLoggerCore
                 message += Environment.NewLine + Environment.NewLine + exception.ToString();
             }
 
-            client.Send(service: "Demo Client", state: logLevel.ToString(), description: message);
+            var formattedLogValues = state as IReadOnlyList<KeyValuePair<string, object>>;
+        
+            var args = new List<KeyValuePair<string, string>>();
+
+            Console.WriteLine("=============================================");
+
+            if (formattedLogValues != null)
+            {
+                foreach (var logValue in formattedLogValues)
+                {
+                    if (logValue.Value != null && logValue.Key != "{OriginalFormat}")
+                    {
+                        args.Add(new KeyValuePair<string, string>(logValue.Key, logValue.Value.ToString()));
+                        Console.WriteLine(logValue.Key + "=" + logValue.Value.ToString());
+                    }
+                }
+            }
+
+            if (current != null)
+            {
+                foreach (var logValue in current._state as IReadOnlyList<KeyValuePair<string, object>>)
+                {
+                    if (logValue.Value != null && logValue.Key != "{OriginalFormat}")
+                    {
+                        args.Add(new KeyValuePair<string, string>(logValue.Key, logValue.Value.ToString()));
+                        Console.WriteLine(logValue.Key + "=" + logValue.Value.ToString());
+                    }
+                }
+            }
+
+
+            client.Send(service: "Demo Client", state: logLevel.ToString(), description: message, args: args);
         }
     }
 }
